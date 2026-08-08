@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Globe, Building2, Sparkles, Code2, Search, Smartphone } from "lucide-react";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 const projects = [
   {
@@ -30,6 +31,7 @@ export default function PortfolioClient() {
       {/* Header */}
       <section className="w-full pt-32 pb-16 text-center px-4 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] md:w-[700px] h-[350px] bg-primary/20 blur-[120px] md:blur-[160px] rounded-[100%] pointer-events-none -z-10" />
+        <Breadcrumb />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

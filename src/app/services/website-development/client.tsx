@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 function ServiceFAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,10 +132,12 @@ export default function WebsiteDevClient() {
     <main className="flex flex-col items-center overflow-hidden">
       
       {/* Hero Section */}
-      <section className="relative w-full min-h-[80vh] flex items-center justify-center pt-32 pb-20 overflow-hidden">
+      <section className="relative w-full min-h-[80vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] opacity-20"></div>
         <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] md:w-[600px] md:h-[600px] bg-blue-500/20 blur-[100px] md:blur-[120px] rounded-full -z-10 pointer-events-none" />
         
+        <Breadcrumb />
+
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

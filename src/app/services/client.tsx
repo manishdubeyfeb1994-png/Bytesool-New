@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Code, TrendingUp, Smartphone, Paintbrush, Lightbulb, ArrowRight, Check, Cloud, HardDrive, Lock } from "lucide-react";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 const serviceLinks: Record<string, string> = {
   "web-dev": "/services/website-development",
@@ -136,6 +137,7 @@ export default function ServicesClient() {
       {/* Header */}
       <section className="w-full pt-32 pb-16 text-center px-4 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] md:w-[600px] h-[300px] bg-primary/20 blur-[100px] md:blur-[150px] rounded-[100%] pointer-events-none -z-10" />
+        <Breadcrumb />
         <motion.h1 
           className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-white gap-2"
           initial={{ opacity: 0, y: 20 }}

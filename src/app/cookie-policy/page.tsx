@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Cookie, ShieldCheck, Info, Settings } from "lucide-react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function CookiePolicy() {
   return (
     <main className="flex flex-col items-center pt-32 pb-8 px-4 overflow-hidden">
+      <Breadcrumb />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/20 blur-[150px] rounded-full pointer-events-none -z-10" />
       
       <div className="container mx-auto max-w-4xl">

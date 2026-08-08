@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
   title: "Terms of Service | BYTESOOL",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function TermsOfService() {
   return (
     <main className="container mx-auto px-4 pt-32 pb-8 max-w-4xl">
+      <Breadcrumb />
       <h1 className="text-4xl md:text-5xl font-bold mb-12 text-white">Terms of Service</h1>
       
       <div className="prose prose-invert max-w-none space-y-8 text-gray-300">

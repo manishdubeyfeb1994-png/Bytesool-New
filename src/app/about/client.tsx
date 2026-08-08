@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Target, DollarSign, Handshake, Zap, Eye, X, Check, ArrowRight } from "lucide-react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 // Simple counter component
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
@@ -150,6 +151,7 @@ export default function AboutClient() {
       {/* Header */}
       <section className="w-full pt-32 pb-16 text-center px-4 relative flex flex-col items-center overflow-hidden">
         <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[80vw] md:w-[600px] h-[400px] bg-purple-600/20 blur-[100px] md:blur-[150px] rounded-[100%] pointer-events-none -z-10" />
+        <Breadcrumb />
         
         <motion.h1 
           className="text-4xl md:text-5xl font-bold mb-10 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500"

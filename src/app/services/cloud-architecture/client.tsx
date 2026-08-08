@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Cloud, Server, DatabaseZap, ShieldCheck, HardDrive, Check, ChevronDown, ArrowRight, Cpu, RefreshCw, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 function ServiceFAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,9 +48,10 @@ export default function CloudArchitectureClient() {
 
   return (
     <main className="flex flex-col items-center overflow-hidden">
-      <section className="relative w-full min-h-[80vh] flex items-center justify-center pt-32 pb-20 overflow-hidden">
+      <section className="relative w-full min-h-[80vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] opacity-20"></div>
         <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] md:w-[600px] md:h-[600px] bg-sky-500/20 blur-[100px] md:blur-[120px] rounded-full -z-10 pointer-events-none" />
+        <Breadcrumb />
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="inline-flex items-center rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1 text-sm font-semibold text-sky-400 mb-8"><Cloud className="mr-2 h-4 w-4" /> Scalable Infrastructure</motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }} className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight max-w-5xl text-balance mb-6 leading-tight">Scalable <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-500">Cloud Architecture</span> Solutions</motion.h1>

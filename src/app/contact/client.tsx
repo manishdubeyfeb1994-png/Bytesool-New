@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Send, CheckCircle2, MessageCircle } from "lucide-react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 type FormValues = {
   name: string;
@@ -46,6 +47,7 @@ export default function ContactClient() {
        {/* Header */}
        <section className="w-full pt-32 pb-16 text-center px-4 relative">
         <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[600px] h-[300px] bg-green-500/10 blur-[150px] rounded-[100%] pointer-events-none -z-10" />
+        <Breadcrumb />
         <motion.h1 
           className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-white"
           initial={{ opacity: 0, y: 20 }}

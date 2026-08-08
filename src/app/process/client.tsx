@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { MessageSquare, FileText, Code2, CheckCircle, LifeBuoy } from "lucide-react";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function ProcessClient() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,7 @@ export default function ProcessClient() {
     <main className="flex flex-col items-center overflow-hidden pb-16">
       {/* Header */}
       <section className="w-full pt-32 pb-24 text-center px-4">
+        <Breadcrumb />
         <motion.div
            initial={{ opacity: 0, scale: 0.9 }}
            animate={{ opacity: 1, scale: 1 }}

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, Calculator, CheckCircle2, ChevronRight, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function AIToolsClient() {
   // Audit State
@@ -116,6 +117,7 @@ export default function AIToolsClient() {
       {/* Header */}
       <section className="w-full pt-32 pb-16 px-4 relative flex flex-col items-center text-center">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/20 blur-[150px] rounded-[100%] pointer-events-none -z-10" />
+        <Breadcrumb />
         
         <motion.div
            initial={{ opacity: 0, scale: 0.9 }}
