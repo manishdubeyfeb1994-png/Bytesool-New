@@ -57,7 +57,7 @@ export function Breadcrumb() {
 
   return (
     <nav aria-label="Breadcrumb" className="w-full container mx-auto px-4 sm:px-6 mb-6">
-      <ol className="flex items-center flex-wrap gap-1 text-xs sm:text-sm">
+      <ol className="flex items-center justify-center flex-wrap gap-1 text-xs sm:text-sm">
         {/* Home */}
         <li className="flex items-center">
           <Link
