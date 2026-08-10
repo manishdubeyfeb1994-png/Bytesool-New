@@ -40,7 +40,7 @@ export function Footer() {
               </span>
             </h2>
             <p className="text-gray-400 text-xs sm:text-sm max-w-sm mb-6">
-              Partner with Bytesool for cutting-edge IT solutions, AI-powered automation, and dedicated support.
+              Get the right technology solutions to simplify operations, improve efficiency, and grow your business.
             </p>
 
             {/* Social Icons */}
@@ -79,7 +79,7 @@ export function Footer() {
             </div>
 
             {/* Email Subscription */}
-            <div className="max-w-[192px]">
+            <div style={{ maxWidth: "340px" }} className="w-full">
               <div className="flex items-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden focus-within:border-primary/50 transition-colors">
                 <input 
                   type="email"
@@ -113,6 +113,7 @@ export function Footer() {
                 <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
                 <li><Link href="/process" className="hover:text-white transition-colors">Our Process</Link></li>
                 <li><Link href="/ai-tools" className="hover:text-white transition-colors">Free AI Tools</Link></li>
+                <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
                 <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
               </ul>
             </div>
