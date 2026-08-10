@@ -1,33 +1,51 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import os from "os";
 
 export const dynamic = "force-dynamic";
 
-const appsFilePath = path.join(process.cwd(), "src", "lib", "applications.json");
-
-let memoryAppsCache: any[] | null = null;
+const tmpDir = os.tmpdir();
+const appsTmpPath = path.join(tmpDir, "bytesool_applications.json");
+const appsLocalPath = path.join(process.cwd(), "src", "lib", "applications.json");
 
 async function getApplicationsList(): Promise<any[]> {
   try {
-    const data = await fs.readFile(appsFilePath, "utf8");
-    const parsed = JSON.parse(data);
-    memoryAppsCache = parsed;
-    return parsed;
+    const data = await fs.readFile(appsTmpPath, "utf8");
+    return JSON.parse(data);
   } catch (err) {
-    return [];
+    try {
+      const data = await fs.readFile(appsLocalPath, "utf8");
+      try {
+        await fs.writeFile(appsTmpPath, data, "utf8");
+      } catch (writeErr) {
+        console.warn("Failed to seed temporary apps file:", writeErr);
+      }
+      return JSON.parse(data);
+    } catch (readLocalErr) {
+      return [];
+    }
   }
 }
 
 async function saveApplicationsList(apps: any[]): Promise<boolean> {
-  memoryAppsCache = apps;
+  const dataStr = JSON.stringify(apps, null, 2);
+  let tempSuccess = false;
+  
   try {
-    await fs.writeFile(appsFilePath, JSON.stringify(apps, null, 2), "utf8");
-    return true;
+    await fs.writeFile(appsTmpPath, dataStr, "utf8");
+    tempSuccess = true;
   } catch (err) {
-    console.warn("Failed to write applications list:", err);
-    return false;
+    console.error("Failed to write applications to temp directory:", err);
   }
+  
+  try {
+    await fs.writeFile(appsLocalPath, dataStr, "utf8");
+  } catch (err) {
+    // Silent fail in serverless
+  }
+  
+  return tempSuccess;
 }
 
 export async function GET() {

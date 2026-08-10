@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import os from "os";
 
 export async function GET(request: Request) {
   try {
@@ -16,20 +17,34 @@ export async function GET(request: Request) {
       return new Response("Permission denied or invalid parameter values", { status: 403 });
     }
 
-    const filePath = path.join(process.cwd(), "src", "lib", "resumes", filename);
+    const tmpDir = os.tmpdir();
+    const fileTmpPath = path.join(tmpDir, "bytesool_resumes", filename);
+    const fileLocalPath = path.join(process.cwd(), "src", "lib", "resumes", filename);
 
+    let fileBytesBuffer: Buffer;
     try {
-      // Verify file access
-      await fs.access(filePath);
+      fileBytesBuffer = await fs.readFile(fileTmpPath);
     } catch {
-      return new Response("Resume file was not found inside the local directory storage.", { status: 404 });
+      try {
+        fileBytesBuffer = await fs.readFile(fileLocalPath);
+      } catch (err) {
+        return new Response("Resume file was not found inside the local directory storage.", { status: 404 });
+      }
     }
 
     // Attempt to lookup original filename from logs
     let originalName = filename;
     try {
-      const appsFilePath = path.join(process.cwd(), "src", "lib", "applications.json");
-      const appsData = await fs.readFile(appsFilePath, "utf8");
+      const appsTmpPath = path.join(tmpDir, "bytesool_applications.json");
+      const appsLocalPath = path.join(process.cwd(), "src", "lib", "applications.json");
+      
+      let appsData: string;
+      try {
+        appsData = await fs.readFile(appsTmpPath, "utf8");
+      } catch {
+        appsData = await fs.readFile(appsLocalPath, "utf8");
+      }
+      
       const apps = JSON.parse(appsData);
       const matchedApp = apps.find((app: any) => app.resumeFilename === filename);
       if (matchedApp && matchedApp.resumeOriginalName) {
@@ -38,8 +53,6 @@ export async function GET(request: Request) {
     } catch (lookupErr) {
       console.warn("Skip file original name lookup fallback:", lookupErr);
     }
-
-    const fileBytesBuffer = await fs.readFile(filePath);
 
     // Set download headers properly to execute attachments
     const responseHeaders = new Headers();
@@ -56,7 +69,7 @@ export async function GET(request: Request) {
     responseHeaders.set("Content-Type", contentType);
     responseHeaders.set("Content-Disposition", `attachment; filename="${encodeURIComponent(originalName)}"`);
 
-    return new Response(fileBytesBuffer, {
+    return new Response(new Uint8Array(fileBytesBuffer), {
       status: 200,
       headers: responseHeaders,
     });

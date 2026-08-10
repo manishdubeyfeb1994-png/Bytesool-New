@@ -1,37 +1,54 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import os from "os";
 
 export const dynamic = "force-dynamic";
 
-// In-memory fallback cache for serverless environments where filesystem is read-only
-let memoryJobsCache: any[] | null = null;
-
-const jobsFilePath = path.join(process.cwd(), "src", "lib", "jobs.json");
+const tmpDir = os.tmpdir();
+const jobsTmpPath = path.join(tmpDir, "bytesool_jobs.json");
+const jobsLocalPath = path.join(process.cwd(), "src", "lib", "jobs.json");
 
 // Helper to read jobs
 async function getJobsList(): Promise<any[]> {
   try {
-    const data = await fs.readFile(jobsFilePath, "utf8");
-    const parsed = JSON.parse(data);
-    memoryJobsCache = parsed;
-    return parsed;
+    const data = await fs.readFile(jobsTmpPath, "utf8");
+    return JSON.parse(data);
   } catch (err) {
-    console.error("Error reading jobs file, using backup blank array:", err);
-    return [];
+    try {
+      const data = await fs.readFile(jobsLocalPath, "utf8");
+      try {
+        await fs.writeFile(jobsTmpPath, data, "utf8");
+      } catch (writeErr) {
+        console.warn("Failed to seed temporary jobs file:", writeErr);
+      }
+      return JSON.parse(data);
+    } catch (readLocalErr) {
+      console.error("Failed to read local jobs bundle:", readLocalErr);
+      return [];
+    }
   }
 }
 
 // Helper to save jobs
 async function saveJobsList(jobs: any[]): Promise<boolean> {
-  memoryJobsCache = jobs;
+  const dataStr = JSON.stringify(jobs, null, 2);
+  let tempSuccess = false;
+  
   try {
-    await fs.writeFile(jobsFilePath, JSON.stringify(jobs, null, 2), "utf8");
-    return true;
+    await fs.writeFile(jobsTmpPath, dataStr, "utf8");
+    tempSuccess = true;
   } catch (err) {
-    console.warn("Failed to write to file system (potentially serverless write restriction):", err);
-    return false;
+    console.error("Failed to write jobs to temp directory:", err);
   }
+  
+  try {
+    await fs.writeFile(jobsLocalPath, dataStr, "utf8");
+  } catch (err) {
+    // Silent fail in serverless
+  }
+  
+  return tempSuccess;
 }
 
 export async function GET() {

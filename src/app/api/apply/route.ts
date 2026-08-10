@@ -1,41 +1,56 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import os from "os";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_1234567890");
 
-// Path to applications list and secure resumes directory
-const appsFilePath = path.join(process.cwd(), "src", "lib", "applications.json");
-const resumesDir = path.join(process.cwd(), "src", "lib", "resumes");
-
-// In-memory fallbacks for serverless environments (if local filesystem write fails)
-let memoryAppsCache: any[] | null = null;
+const tmpDir = os.tmpdir();
+const appsTmpPath = path.join(tmpDir, "bytesool_applications.json");
+const appsLocalPath = path.join(process.cwd(), "src", "lib", "applications.json");
+const resumesTmpDir = path.join(tmpDir, "bytesool_resumes");
+const resumesLocalDir = path.join(process.cwd(), "src", "lib", "resumes");
 
 // Read applications helper
 async function getApplicationsList(): Promise<any[]> {
-  if (memoryAppsCache) return memoryAppsCache;
   try {
-    const data = await fs.readFile(appsFilePath, "utf8");
-    const parsed = JSON.parse(data);
-    memoryAppsCache = parsed;
-    return parsed;
+    const data = await fs.readFile(appsTmpPath, "utf8");
+    return JSON.parse(data);
   } catch (err) {
-    // If file doesn't exist, start with empty array
-    return [];
+    try {
+      const data = await fs.readFile(appsLocalPath, "utf8");
+      try {
+        await fs.writeFile(appsTmpPath, data, "utf8");
+      } catch (writeErr) {
+        console.warn("Failed to seed temporary apps file:", writeErr);
+      }
+      return JSON.parse(data);
+    } catch (readLocalErr) {
+      return [];
+    }
   }
 }
 
 // Write applications helper
 async function saveApplicationsList(apps: any[]): Promise<boolean> {
-  memoryAppsCache = apps;
+  const dataStr = JSON.stringify(apps, null, 2);
+  let tempSuccess = false;
+  
   try {
-    await fs.writeFile(appsFilePath, JSON.stringify(apps, null, 2), "utf8");
-    return true;
+    await fs.writeFile(appsTmpPath, dataStr, "utf8");
+    tempSuccess = true;
   } catch (err) {
-    console.warn("Failed to write applications list to filesystem:", err);
-    return false;
+    console.error("Failed to write applications to temp directory:", err);
   }
+  
+  try {
+    await fs.writeFile(appsLocalPath, dataStr, "utf8");
+  } catch (err) {
+    // Silent fail in serverless
+  }
+  
+  return tempSuccess;
 }
 
 export async function POST(request: Request) {
@@ -98,10 +113,17 @@ export async function POST(request: Request) {
 
     // Save resume to non-public secure resumes folder
     try {
-      await fs.mkdir(resumesDir, { recursive: true });
-      await fs.writeFile(path.join(resumesDir, uniqueResumeName), fileBytesBuffer);
+      await fs.mkdir(resumesTmpDir, { recursive: true });
+      await fs.writeFile(path.join(resumesTmpDir, uniqueResumeName), fileBytesBuffer);
     } catch (saveErr) {
-      console.warn("Failed to write resume to disk, continuing mock email application:", saveErr);
+      console.warn("Failed to write resume to temp path:", saveErr);
+    }
+
+    try {
+      await fs.mkdir(resumesLocalDir, { recursive: true });
+      await fs.writeFile(path.join(resumesLocalDir, uniqueResumeName), fileBytesBuffer);
+    } catch (saveErr) {
+      // Silent fail in serverless
     }
 
     // Save application to jobs/applications JSON list
