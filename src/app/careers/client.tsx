@@ -388,7 +388,7 @@ export default function CareersClient() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[55vw] h-[400px] bg-indigo-500/10 blur-[130px] rounded-[100%] pointer-events-none -z-10" />
 
-        <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 max-w-[1400px] relative z-10">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
@@ -513,7 +513,7 @@ export default function CareersClient() {
                   <p className="text-gray-400 text-sm">Loading active listings...</p>
                 </div>
               ) : filteredJobs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                   {filteredJobs.map((job, idx) => (
                     <motion.div
                       key={job.id}
@@ -521,7 +521,7 @@ export default function CareersClient() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.3, delay: idx * 0.05 }}
-                      className="group relative bg-card/25 backdrop-blur-xl border border-white/5 hover:border-primary/30 rounded-3xl p-6 md:p-8 flex flex-col hover:bg-card/45 transition-all duration-300 shadow-md overflow-hidden"
+                      className="group relative bg-card/25 backdrop-blur-xl border border-white/5 hover:border-primary/30 rounded-3xl p-5 flex flex-col hover:bg-card/45 transition-all duration-300 shadow-md overflow-hidden"
                     >
                       {job.isFeatured && (
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500" />
@@ -534,27 +534,27 @@ export default function CareersClient() {
                               ★ Featured Position
                             </span>
                           )}
-                          <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-primary transition-colors">
+                          <h3 className="text-base md:text-lg font-bold text-white group-hover:text-primary transition-colors leading-snug">
                             {job.title}
                           </h3>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2.5 mb-5">
-                        <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">
-                          <Briefcase size={12} className="text-primary" />
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        <span className="flex items-center gap-1 bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                          <Briefcase size={10} className="text-primary" />
                           {job.department}
                         </span>
-                        <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">
-                          <MapPin size={12} className="text-primary" />
+                        <span className="flex items-center gap-1 bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                          <MapPin size={10} className="text-primary" />
                           {job.location}
                         </span>
-                        <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">
-                          <Award size={12} className="text-primary" />
+                        <span className="flex items-center gap-1 bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                          <Award size={10} className="text-primary" />
                           {job.experience}
                         </span>
-                        <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">
-                          <Clock size={12} className="text-primary" />
+                        <span className="flex items-center gap-1 bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                          <Clock size={10} className="text-primary" />
                           {job.employmentType}
                         </span>
                       </div>
@@ -565,12 +565,12 @@ export default function CareersClient() {
 
                       <hr className="border-white/5 mb-6" />
 
-                      <div className="flex items-center justify-between gap-4 mt-auto">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold flex items-center gap-1">
-                            <Calendar size={10} /> Posted
+                      <div className="flex items-center justify-between gap-3 mt-auto">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold flex items-center gap-1">
+                            <Calendar size={9} /> Posted
                           </span>
-                          <span className="text-xs text-gray-300 font-medium font-mono">
+                          <span className="text-[10px] text-gray-300 font-medium font-mono">
                             {new Date(job.postedDate).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
@@ -580,8 +580,8 @@ export default function CareersClient() {
                         </div>
 
                         <Link href={`/careers/${job.slug}`} className="cursor-pointer">
-                          <Button size="sm" className="font-semibold text-xs py-5 px-5 rounded-xl group-hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all flex items-center gap-1 bg-indigo-650 hover:bg-indigo-600">
-                            View &amp; Apply
+                          <Button size="sm" className="font-semibold text-xs h-9 px-4 rounded-xl group-hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all flex items-center gap-1 bg-indigo-650 hover:bg-indigo-600">
+                            Apply
                             <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                           </Button>
                         </Link>

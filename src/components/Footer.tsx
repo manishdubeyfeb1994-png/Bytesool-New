@@ -137,13 +137,17 @@ export function Footer() {
             <div>
               <h4 className="font-semibold text-white mb-4">Contact Info</h4>
               <ul className="space-y-4 text-sm text-gray-400">
-                <li className="flex items-center gap-3">
-                  <Phone size={20} className="text-primary flex-shrink-0" />
-                  <span>+91 92894 11974</span>
+                <li>
+                  <a href="tel:+919289411974" className="flex items-center gap-3 hover:text-white transition-colors">
+                    <Phone size={20} className="text-primary flex-shrink-0" />
+                    <span>+91 92894 11974</span>
+                  </a>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Mail size={20} className="text-primary flex-shrink-0" />
-                  <span>info@bytesool.com</span>
+                <li>
+                  <a href="mailto:info@bytesool.com" className="flex items-center gap-3 hover:text-white transition-colors">
+                    <Mail size={20} className="text-primary flex-shrink-0" />
+                    <span>info@bytesool.com</span>
+                  </a>
                 </li>
               </ul>
             </div>
