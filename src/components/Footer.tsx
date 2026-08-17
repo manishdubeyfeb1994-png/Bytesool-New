@@ -2,11 +2,45 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Phone, ArrowRight } from "lucide-react";
+import { Mail, Phone, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus("success");
+        setMessage(data.message || "Subscribed successfully!");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMessage(data.error || "Something went wrong.");
+      }
+    } catch (err) {
+      setStatus("error");
+      setMessage("Failed to connect to the server.");
+    }
+  };
 
   return (
     <footer className="relative border-t border-white/10 bg-background/50 backdrop-blur-xl pt-16 pb-8">
@@ -80,18 +114,37 @@ export function Footer() {
 
             {/* Email Subscription */}
             <div style={{ maxWidth: "340px" }} className="w-full">
-              <div className="flex items-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden focus-within:border-primary/50 transition-colors">
+              <form onSubmit={handleSubscribe} className="flex items-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden focus-within:border-primary/50 transition-colors">
                 <input 
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-transparent text-white placeholder-gray-500 px-4 py-2.5 text-xs outline-none"
+                  disabled={status === "loading"}
+                  required
+                  className="flex-1 bg-transparent text-white placeholder-gray-500 px-4 py-2.5 text-xs outline-none disabled:opacity-50"
                 />
-                <button className="bg-gradient-to-r from-primary to-purple-500 text-white px-4 sm:px-5 py-2.5 text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 transition-opacity rounded-full m-0.5 whitespace-nowrap cursor-pointer">
-                  Subscribe <ArrowRight size={14} />
+                <button 
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="bg-gradient-to-r from-primary to-purple-500 text-white px-4 sm:px-5 py-2.5 text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 transition-opacity rounded-full m-0.5 whitespace-nowrap cursor-pointer disabled:opacity-50"
+                >
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" /> Subscribing...
+                    </>
+                  ) : (
+                    <>
+                      Subscribe <ArrowRight size={14} />
+                    </>
+                  )}
                 </button>
-              </div>
+              </form>
+              {message && (
+                <p className={`text-[10px] mt-2 font-medium ${status === "success" ? "text-emerald-400" : "text-rose-400"}`}>
+                  {message}
+                </p>
+              )}
               <p className="text-[10px] text-gray-500 mt-2">
                 By subscribing I accept the{" "}
                 <Link href="/privacy-policy" className="text-gray-400 underline hover:text-primary transition-colors">Privacy Policy</Link>

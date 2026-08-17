@@ -50,9 +50,10 @@ export default function AdminClient() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   
-  const [activeTab, setActiveTab] = useState<"jobs" | "apps">("jobs");
+  const [activeTab, setActiveTab] = useState<"jobs" | "apps" | "subs">("jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Form State
@@ -98,6 +99,9 @@ export default function AdminClient() {
 
       const appsRes = await fetch(`/api/applications?t=${Date.now()}`, { cache: "no-store" });
       if (appsRes.ok) setApplications(await appsRes.json());
+
+      const subsRes = await fetch(`/api/subscribe?t=${Date.now()}`, { cache: "no-store" });
+      if (subsRes.ok) setSubscriptions(await subsRes.json());
     } catch (e) {
       console.error(e);
     } finally {
@@ -227,6 +231,28 @@ export default function AdminClient() {
     });
   };
 
+  // Delete Subscription log
+  const handleDeleteSubscription = (sub: { id: string; email: string }) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Remove Subscribed User",
+      message: `Are you sure you want to unsubscribe "${sub.email}"? This will permanently remove them from the list.`,
+      onConfirm: async () => {
+        try {
+          const res = await fetch("/api/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "delete", id: sub.id })
+          });
+          if (res.ok) fetchData();
+        } catch (err) {
+          console.error(err);
+        }
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
+
   if (!isAuthenticated) {
     return (
       <main className="flex justify-center items-center min-h-[80vh] pt-24 px-4 bg-background">
@@ -273,9 +299,12 @@ export default function AdminClient() {
         <button onClick={() => setActiveTab("apps")} className={`pb-3 px-6 text-sm font-semibold border-b-2 transition-all ${activeTab === "apps" ? "border-primary text-white" : "border-transparent text-gray-500 hover:text-gray-300"}`}>
           Candidate Applications ({applications.length})
         </button>
+        <button onClick={() => setActiveTab("subs")} className={`pb-3 px-6 text-sm font-semibold border-b-2 transition-all ${activeTab === "subs" ? "border-primary text-white" : "border-transparent text-gray-500 hover:text-gray-300"}`}>
+          Subscribed Users ({subscriptions.length})
+        </button>
       </div>
 
-      {activeTab === "jobs" ? (
+      {activeTab === "jobs" && (
         <section className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-white">Active Vacancies</h2>
@@ -319,7 +348,9 @@ export default function AdminClient() {
             </table>
           </div>
         </section>
-      ) : (
+      )}
+
+      {activeTab === "apps" && (
         <section className="space-y-6">
           <h2 className="text-lg font-bold text-white">Received Applications (Step 9)</h2>
           
@@ -339,7 +370,7 @@ export default function AdminClient() {
                   <tr key={app.id} className="hover:bg-white/[0.01]">
                     <td className="py-4 px-6">
                       <div className="font-bold text-white">{app.name}</div>
-                      <div className="text-xs text-gray-500">{app.email} &bull; {app.phone}</div>
+                      <div className="text-xs text-gray-550">{app.email} &bull; {app.phone}</div>
                     </td>
                     <td className="py-4 px-4">
                       <div className="text-gray-300">{app.positionAppliedFor}</div>
@@ -376,6 +407,66 @@ export default function AdminClient() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "subs" && (
+        <section className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-bold text-white">Subscribed Users</h2>
+            <div className="text-xs text-gray-400 font-medium">
+              Total Subscribers: <span className="text-primary font-bold">{subscriptions.length}</span>
+            </div>
+          </div>
+
+          <div className="bg-card/20 border border-white/5 rounded-3xl overflow-hidden">
+            {subscriptions.length === 0 ? (
+              <div className="py-12 text-center text-gray-500">
+                <Mail className="mx-auto text-gray-600 h-10 w-10 mb-3 animate-pulse" />
+                <p className="text-sm">No subscribed users found.</p>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/5 bg-white/[0.01] text-[10px] uppercase font-bold text-gray-450">
+                    <th className="py-4 px-6">Email Address</th>
+                    <th className="py-4 px-6">Subscription Date</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-sm text-gray-300 font-medium">
+                  {subscriptions.map((sub) => (
+                    <tr key={sub.id} className="hover:bg-white/[0.01] transition-colors">
+                      <td className="py-4 px-6">
+                        <a href={`mailto:${sub.email}`} className="text-white hover:text-primary transition-colors inline-flex items-center gap-2">
+                          <Mail size={14} className="text-gray-500" />
+                          {sub.email}
+                        </a>
+                      </td>
+                      <td className="py-4 px-6 text-xs font-mono text-gray-450">
+                        {new Date(sub.subscribedAt).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })} at {new Date(sub.subscribedAt).toLocaleTimeString(undefined, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button 
+                          onClick={() => handleDeleteSubscription(sub)} 
+                          className="inline-flex items-center gap-1.5 p-1.5 px-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-semibold text-red-400 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={12} /> Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </section>
       )}
