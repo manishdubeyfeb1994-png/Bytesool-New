@@ -42,7 +42,7 @@ interface Application {
   appliedDate: string;
   resumeFilename: string;
   resumeOriginalName: string;
-  status: "New" | "Shortlisted" | "Interview" | "Selected" | "Rejected";
+  status: "New" | "Shortlisted" | "Interview" | "Selected" | "Approved" | "Rejected";
 }
 
 export default function AdminClient() {
@@ -382,6 +382,7 @@ export default function AdminClient() {
                         value={app.status} 
                         onChange={(e) => handleUpdateAppStatus(app.id, e.target.value)} 
                         className={`mx-auto block bg-black/45 border border-white/10 rounded-lg text-xs py-1.5 px-3 font-semibold ${
+                          app.status === "Approved" ? "text-emerald-400 bg-emerald-500/5 border-emerald-500/20" :
                           app.status === "Selected" ? "text-emerald-400 bg-emerald-500/5 border-emerald-500/20" :
                           app.status === "Interview" ? "text-indigo-400 bg-indigo-500/5 border-indigo-500/20" :
                           app.status === "Shortlisted" ? "text-purple-400 bg-purple-500/5 border-purple-500/20" :
@@ -392,6 +393,7 @@ export default function AdminClient() {
                         <option value="Shortlisted">Shortlisted</option>
                         <option value="Interview">Interview</option>
                         <option value="Selected">Selected</option>
+                        <option value="Approved">Approved</option>
                         <option value="Rejected">Rejected</option>
                       </select>
                     </td>
