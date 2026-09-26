@@ -37,6 +37,7 @@ export function Navbar() {
     { name: "About", href: "/about" },
     { name: "Process", href: "/process" },
     { name: "AI Tools", href: "/ai-tools" },
+    { name: "Careers", href: "/careers" },
   ];
 
   const serviceLinks = [

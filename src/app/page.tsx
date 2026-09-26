@@ -294,10 +294,10 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="w-full py-16 sm:py-24 bg-card/30 border-y border-white/5">
+      <section className="w-full py-16 sm:py-20 bg-card/30 border-y border-white/5">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-center mb-10 sm:mb-16">The Market Has Spoken</h2>
-          <div className="flex justify-center">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-center mb-10 sm:mb-12">The Market Has Spoken</h2>
+          <div className="flex flex-wrap gap-6 justify-center max-w-6xl mx-auto">
             {testimonials.map((test, i) => (
               <motion.div
                 key={i}
@@ -305,21 +305,21 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-background p-8 sm:p-10 rounded-2xl border border-white/5 flex flex-col justify-between max-w-xl w-full"
+                className="bg-background p-6 md:p-8 rounded-2xl border border-white/5 flex flex-col justify-between max-w-sm w-full hover:border-primary/20 transition-colors shadow-lg"
               >
                 <div>
-                  <div className="flex gap-1 mb-6 text-yellow-500 justify-center sm:justify-start">
-                    {[...Array(test.rating)].map((_, idx) => <Star key={idx} size={20} fill="currentColor" />)}
+                  <div className="flex gap-0.5 mb-4 text-yellow-500 justify-center sm:justify-start">
+                    {[...Array(test.rating)].map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
                   </div>
-                  <p className="text-gray-300 italic mb-8 text-lg text-center sm:text-left leading-relaxed">"{test.text}"</p>
+                  <p className="text-gray-300 italic mb-6 text-sm md:text-base text-center sm:text-left leading-relaxed">"{test.text}"</p>
                 </div>
-                <div className="flex items-center gap-4 justify-center sm:justify-start">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center font-bold text-white shadow-lg text-lg">
+                <div className="flex items-center gap-3 justify-center sm:justify-start">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center font-bold text-white shadow-md text-base">
                     {test.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="text-md font-semibold text-white">{test.name}</h4>
-                    {test.role && <p className="text-xs text-gray-400 mt-0.5">{test.role}</p>}
+                    <h4 className="text-sm font-semibold text-white leading-none">{test.name}</h4>
+                    {test.role && <p className="text-[11px] text-gray-500 mt-1">{test.role}</p>}
                   </div>
                 </div>
               </motion.div>
