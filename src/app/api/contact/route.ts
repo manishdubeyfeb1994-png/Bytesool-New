@@ -32,8 +32,32 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      console.error('Resend error sending to admin:', error);
       return NextResponse.json({ error: error.message || 'Unknown Resend error' }, { status: 400 });
+    }
+
+    // Send confirmation email to the user
+    try {
+      await resend.emails.send({
+        from: 'Bytesool <info@bytesool.com>',
+        to: [email],
+        subject: 'Thank you for contacting Bytesool!',
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 12px;">
+            <h2 style="color: #6366f1;">We received your message!</h2>
+            <p>Hi ${name},</p>
+            <p>Thank you for reaching out to us. We have successfully received your message regarding <strong>${service || 'our services'}</strong>.</p>
+            <p>Our team will review your inquiry and get back to you shortly.</p>
+            <br/>
+            <p>Best regards,</p>
+            <p><strong>Bytesool Team</strong></p>
+            <hr style="border: 0; border-top: 1px solid #f0f0f0; margin-top: 30px;"/>
+            <p style="font-size: 11px; color: #999; text-align: center;">This is an automated confirmation that your message has been received.</p>
+          </div>
+        `,
+      });
+    } catch (userEmailErr) {
+      console.warn("Failed to send user confirmation email", userEmailErr);
     }
 
     return NextResponse.json({ success: true, data }, { status: 200 });

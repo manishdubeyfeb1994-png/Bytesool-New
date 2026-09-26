@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import os from "os";
+import { Resend } from "resend";
 
 export const dynamic = "force-dynamic";
+
+const resend = new Resend(process.env.RESEND_API_KEY || "re_1234567890");
 
 const tmpDir = os.tmpdir();
 const subsTmpPath = path.join(tmpDir, "bytesool_subscriptions.json");
@@ -115,6 +118,28 @@ export async function POST(request: Request) {
 
     currentSubs.push(newSubscription);
     const success = await saveSubscriptionsList(currentSubs);
+
+    // Send confirmation email
+    try {
+      await resend.emails.send({
+        from: "Bytesool Newsletter <info@bytesool.com>",
+        to: [normalizedEmail],
+        subject: "Successfully Subscribed to Bytesool!",
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 12px;">
+            <h2 style="color: #6366f1;">Subscription Confirmed</h2>
+            <p>Hello,</p>
+            <p>Thank you for subscribing to our newsletter! We're excited to have you on board.</p>
+            <p>You can look forward to updates and insights from the Bytesool team.</p>
+            <br/>
+            <p>Best regards,</p>
+            <p><strong>Bytesool Team</strong></p>
+          </div>
+        `,
+      });
+    } catch (emailErr) {
+      console.warn("Failed to send subscription confirmation email", emailErr);
+    }
 
     return NextResponse.json(
       { success, message: "Subscribed successfully! Thank you." },
