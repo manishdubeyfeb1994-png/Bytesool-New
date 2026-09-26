@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_1234567890');
+const WEB3FORMS_ACCESS_KEY = process.env.WEB3FORMS_ACCESS_KEY || '8315f99d-63fc-422b-99e6-55a2c0d6f65c';
 
 export async function POST(request: Request) {
   try {
@@ -15,28 +14,32 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await resend.emails.send({
-      from: 'Bytesool Contact Form <info@bytesool.com>', // Change to your verified domain (e.g., hello@bytesool.com)
-      to: ['info@bytesool.com'],
-      subject: `New Lead: ${name} - ${service}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Service of Interest:</strong> ${service || 'Not specified'}</p>
-        <br/>
-        <p><strong>Message/Project Details:</strong></p>
-        <p>${message || 'No message provided.'}</p>
-      `,
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `New Lead: ${name} - ${service || 'General Inquiry'}`,
+        from_name: 'Bytesool Contact Form',
+        name,
+        email,
+        phone,
+        service: service || 'Not specified',
+        message: message || 'No message provided.',
+      }),
     });
 
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ error: error.message || 'Unknown Resend error' }, { status: 400 });
-    }
+    const result = await response.json();
 
-    return NextResponse.json({ success: true, data }, { status: 200 });
+    if (result.success) {
+      return NextResponse.json({ success: true, data: result }, { status: 200 });
+    } else {
+      console.error('Web3Forms error:', result);
+      return NextResponse.json({ error: result.message || 'Failed to send email' }, { status: 400 });
+    }
   } catch (error: any) {
     console.error('Failed to send email:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
