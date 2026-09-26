@@ -80,28 +80,62 @@ export async function POST(request: Request) {
         const prevStatus = updatedApps[idx].status;
         updatedApps[idx] = { ...updatedApps[idx], status };
 
-        if (status === "Approved" && prevStatus !== "Approved") {
+        if (status !== prevStatus) {
           const applicant = updatedApps[idx];
-          try {
-            await resend.emails.send({
-              from: "Bytesool Careers <info@bytesool.com>",
-              to: [applicant.email],
-              subject: "Congratulations! You've been selected at Bytesool",
-              html: `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 12px;">
-                  <h2 style="color: #6366f1;">Congratulations ${applicant.name}!</h2>
-                  <p>We are thrilled to inform you that you have been <strong>Approved</strong> and selected for the <strong>${applicant.positionAppliedFor}</strong> position at Bytesool!</p>
-                  <p>Our team was very impressed with your background and experience, and we believe you will be a fantastic addition to our company.</p>
-                  <p>Our HR department will be in touch shortly with your official offer letter and next steps regarding onboarding.</p>
-                  <br/>
-                  <p>Welcome to the team!</p>
-                  <p>Best regards,</p>
-                  <p><strong>Bytesool Recruitment Team</strong></p>
-                </div>
-              `
-            });
-          } catch (emailErr) {
-            console.error("Failed to send congratulation email", emailErr);
+          
+          let subject = "";
+          let messageBody = "";
+          let sendMail = true;
+
+          switch (status) {
+            case "Shortlisted":
+              subject = "Update on your application at Bytesool: Shortlisted";
+              messageBody = `<p>We are pleased to inform you that your application for the <strong>${applicant.positionAppliedFor}</strong> position has been <strong>Shortlisted</strong>.</p>
+              <p>Our team is currently reviewing your profile in more detail. We will reach out soon regarding the next steps.</p>`;
+              break;
+            case "Interview":
+              subject = "Update on your application at Bytesool: Interview Invitation";
+              messageBody = `<p>Great news! We would like to invite you for an <strong>Interview</strong> for the <strong>${applicant.positionAppliedFor}</strong> position.</p>
+              <p>Our recruitment team will be in touch shortly to schedule the date and time.</p>`;
+              break;
+            case "Selected":
+            case "Approved":
+              subject = "Congratulations! You've been Selected at Bytesool";
+              messageBody = `<p>We are thrilled to inform you that you have been <strong>${status}</strong> for the <strong>${applicant.positionAppliedFor}</strong> position at Bytesool!</p>
+              <p>Our team was very impressed with your background and experience, and we believe you will be a fantastic addition to our company.</p>
+              <p>Our HR department will be in touch shortly with your official offer letter and next steps regarding onboarding.</p>
+              <br/>
+              <p>Welcome to the team!</p>`;
+              break;
+            case "Rejected":
+              subject = "Update on your application at Bytesool";
+              messageBody = `<p>Thank you for taking the time to apply for the <strong>${applicant.positionAppliedFor}</strong> position.</p>
+              <p>While we appreciate your interest and were impressed by your background, we have decided to move forward with other candidates whose experience more closely matches our current needs for this role.</p>
+              <p>We wish you the best in your job search and future career endeavors.</p>`;
+              break;
+            default:
+              sendMail = false;
+          }
+
+          if (sendMail) {
+            try {
+              await resend.emails.send({
+                from: "Bytesool Careers <info@bytesool.com>",
+                to: [applicant.email],
+                subject: subject,
+                html: `
+                  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; border-radius: 12px;">
+                    <h2 style="color: #6366f1;">Hello ${applicant.name},</h2>
+                    ${messageBody}
+                    <br/>
+                    <p>Best regards,</p>
+                    <p><strong>Bytesool Recruitment Team</strong></p>
+                  </div>
+                `
+              });
+            } catch (emailErr) {
+              console.error("Failed to send status update email", emailErr);
+            }
           }
         }
       } else {
